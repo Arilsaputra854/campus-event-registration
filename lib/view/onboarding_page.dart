@@ -1,5 +1,5 @@
+import 'package:campus_event_registration/view/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -37,7 +37,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
         curve: Curves.easeInOut,
       );
     } else {
-      context.go('/login');
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
       
     }
   }

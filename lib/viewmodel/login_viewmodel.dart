@@ -1,35 +1,19 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:campus_event_registration/helper/database_helper.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginViewModel {
-  final String _baseUrl = 'https://api2.isc-webdev.my.id/api/login';
+  Future<bool> login(String email, String password) async {
+    final user = await UserDatabase.getUserByEmail(email);
+    if (user == null) return false;
 
-  Future<Map<String, dynamic>> login(String email, String password) async {
-    try {
-      final response = await http.post(
-        Uri.parse(_baseUrl),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email, 'password': password}),
-      );
+    if (user.password == password) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_admin', user.isAdmin);
+      await prefs.setInt('user_id', user.id!);
 
-      final data = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        return {
-          'success': true,
-          'data': data,
-        };
-      } else {
-        return {
-          'success': false,
-          'message': data['message'] ?? 'Login gagal',
-        };
-      }
-    } catch (e) {
-      return {
-        'success': false,
-        'message': 'Terjadi kesalahan. Cek koneksi atau coba lagi.',
-      };
+      return true;
     }
+
+    return false;
   }
 }

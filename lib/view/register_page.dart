@@ -1,6 +1,6 @@
 import 'package:campus_event_registration/model/user.dart';
+import 'package:campus_event_registration/view/login_page.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import '../viewmodel/register_viewmodel.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -40,17 +40,17 @@ class _RegisterPageState extends State<RegisterPage> {
       password: _passwordController.text.trim(),
     );
 
-    final result = await _viewModel.register(user);
+    final isSuccess = await _viewModel.register(user);
 
     setState(() {
       _isLoading = false;
     });
 
-    if (result['success']) {
-      context.go('/login');
+    if (isSuccess) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage(),));
     } else {
       setState(() {
-        _errorMessage = result['message'];
+        _errorMessage = 'Email sudah digunakan';
       });
     }
   }
@@ -88,7 +88,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     prefixIcon: const Icon(Icons.lock),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
                       onPressed: () {
                         setState(() {
@@ -96,10 +98,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         });
                       },
                     ),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Password tidak boleh kosong';
+                    if (value == null || value.isEmpty)
+                      return 'Password tidak boleh kosong';
                     return null;
                   },
                 ),
@@ -107,13 +112,15 @@ class _RegisterPageState extends State<RegisterPage> {
                 _isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : ElevatedButton(
-                        onPressed: _register,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      onPressed: _register,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: const Text('Register'),
                       ),
+                      child: const Text('Register'),
+                    ),
                 if (_errorMessage != null) ...[
                   const SizedBox(height: 16),
                   Text(

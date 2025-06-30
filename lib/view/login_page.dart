@@ -1,6 +1,7 @@
+import 'package:campus_event_registration/view/home_page.dart';
+import 'package:campus_event_registration/view/register_page.dart';
 import 'package:campus_event_registration/viewmodel/login_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -27,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
       _errorMessage = null;
     });
 
-    final result = await _viewModel.login(
+    final isSuccess = await _viewModel.login(
       _emailController.text.trim(),
       _passwordController.text.trim(),
     );
@@ -36,11 +37,11 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = false;
     });
 
-    if (result['success']) {
-      context.go('/home');
+    if (isSuccess) {
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
     } else {
       setState(() {
-        _errorMessage = result['message'];
+        _errorMessage = 'Email atau password salah';
       });
     }
   }
@@ -138,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Text("Belum punya akun? "),
                     GestureDetector(
-                      onTap: () => context.go('/register'),
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),)),
                       child: const Text(
                         "Buat akun di sini",
                         style: TextStyle(
